@@ -1,12 +1,16 @@
 # MountMate
 
+**Download:** [MountMate 0.3.3 for Apple Silicon (.dmg)](https://github.com/xiaohardy/MountMate/releases/download/v0.3.3/MountMate-0.3.3-build6-preview-arm64.dmg) · [Release notes](https://github.com/xiaohardy/MountMate/releases/tag/v0.3.3)
+
+The installer is under **Releases → Assets** on GitHub. The **Packages** tab does not list DMG files.
+
 [简体中文说明](README.zh-CN.md) · [Release checklist](RELEASING.md)
 
 MountMate is a macOS menu bar app that keeps selected SMB shares connected and safely cleans up temporary mounts. This is an **Apple Silicon preview**.
 
 ## Install or update
 
-1. Download the DMG from the [v0.3.3 preview release](https://github.com/xiaohardy/MountMate/releases/tag/v0.3.3).
+1. Download the [Apple Silicon DMG](https://github.com/xiaohardy/MountMate/releases/download/v0.3.3/MountMate-0.3.3-build6-preview-arm64.dmg).
 2. Open it and drag **MountMate.app** to **Applications**.
 3. Start MountMate from Applications. Closing its window leaves the menu bar app running; choose **Quit MountMate** from the menu bar to exit.
 

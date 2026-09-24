@@ -1,12 +1,16 @@
 # MountMate / 挂载管家
 
+**直接下载：[MountMate 0.3.3 Apple Silicon 安装包（DMG）](https://github.com/xiaohardy/MountMate/releases/download/v0.3.3/MountMate-0.3.3-build6-preview-arm64.dmg)** · [版本说明](https://github.com/xiaohardy/MountMate/releases/tag/v0.3.3)
+
+安装包位于 GitHub 的 **Releases → Assets（资源）** 中；**Packages** 栏不会显示 DMG。
+
 [English](README.md) · [发布检查单](RELEASING.md)
 
 MountMate 是 macOS 菜单栏挂载工具：保持指定 SMB 共享连接，按规则手动或每日清理临时挂载。当前提供 **Apple Silicon 预览版**。
 
 ## 安装或更新
 
-1. 从 [v0.3.3 预览版](https://github.com/xiaohardy/MountMate/releases/tag/v0.3.3)下载 DMG。
+1. 下载 [Apple Silicon DMG 安装包](https://github.com/xiaohardy/MountMate/releases/download/v0.3.3/MountMate-0.3.3-build6-preview-arm64.dmg)。
 2. 打开镜像，将 **MountMate.app** 拖到 **Applications** 快捷方式。
 3. 从“应用程序”启动 MountMate。关闭主窗口后，菜单栏入口仍会运行；要退出，请在菜单栏选择“退出 MountMate”。
 
