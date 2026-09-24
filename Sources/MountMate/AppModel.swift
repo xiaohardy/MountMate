@@ -50,6 +50,7 @@ final class AppModel: ObservableObject {
     private var mountObserver: NSObjectProtocol?
     private var unmountObserver: NSObjectProtocol?
     private var sleeping = false
+    private var runningSince = Date()
     private var connecting: Set<UUID> = []
     private var authFailures: Set<UUID> = []
     private var retryCount: [UUID: Int] = [:]
@@ -154,14 +155,14 @@ final class AppModel: ObservableObject {
     func importCurrentSMBShares(_ selectedIDs: Set<String>) -> Int {
         let chosen = importCandidates.filter { selectedIDs.contains($0.id) }
         guard !chosen.isEmpty else { return 0 }
-        mutate { value in
+        guard mutate({ value in
             for candidate in chosen {
                 value.shares.append(ManagedShare(name: candidate.name, address: candidate.address,
                                                 username: candidate.username, guestAccess: false,
                                                 useSystemCredentials: true, keepConnected: true,
                                                 protectFromCleanup: true))
             }
-        }
+        }) else { return 0 }
         addEvent(t("importSuccessCount", ["count": String(chosen.count)]))
         refresh()
         return chosen.count
@@ -170,10 +171,10 @@ final class AppModel: ObservableObject {
     func connectNow(_ id: UUID) {
         guard let share = settings.shares.first(where: { $0.id == id }) else { return }
         if share.paused {
-            mutate { value in
+            guard mutate({ value in
                 guard let index = value.shares.firstIndex(where: { $0.id == id }) else { return }
                 value.shares[index].paused = false
-            }
+            }) else { return }
         }
         authFailures.remove(id)
         nextRetry.removeValue(forKey: id)
@@ -184,7 +185,7 @@ final class AppModel: ObservableObject {
     func disconnect(_ id: UUID) {
         guard let share = settings.shares.first(where: { $0.id == id }),
               let volume = mountedVolume(for: share) else { return }
-        pauseShare(id)
+        guard pauseShare(id) else { return }
         Task {
             await unmountVerified(volume, reason: t("reasonManualDisconnect"))
             refresh()
@@ -192,6 +193,7 @@ final class AppModel: ObservableObject {
     }
 
     func updateShare(_ share: ManagedShare, newPassword: String?) -> String? {
+        if let storageIssue { return storageIssue }
         guard SMBAddress(share.address) != nil else { return t("invalidSMBAddress") }
         guard !share.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return t("missingShareName") }
         let key = SMBAddress(share.address)!.key
@@ -206,18 +208,27 @@ final class AppModel: ObservableObject {
             (updatedShare.username.isEmpty || ((newPassword ?? "").isEmpty && PasswordStore.read(for: share.id) == nil)) {
             return t("credentialsRequired")
         }
-        if !updatedShare.guestAccess, let newPassword, !newPassword.isEmpty {
+        let previousPassword = PasswordStore.read(for: share.id)
+        let replacesPassword = !updatedShare.guestAccess && !(newPassword ?? "").isEmpty
+        if replacesPassword, let newPassword {
             do { try PasswordStore.save(newPassword, for: share.id) }
-            catch { return error.localizedDescription }
+            catch let error as KeychainError {
+                return t("keychainFailed", ["code": String(error.status)])
+            } catch { return error.localizedDescription }
         }
-        if updatedShare.guestAccess {
-            updatedShare.useSystemCredentials = false
-            PasswordStore.delete(for: share.id)
-        }
-        if updatedShare.useSystemCredentials == true { PasswordStore.delete(for: share.id) }
-        mutate { value in
+        if updatedShare.guestAccess { updatedShare.useSystemCredentials = false }
+        guard mutate({ value in
             if let index = value.shares.firstIndex(where: { $0.id == share.id }) { value.shares[index] = updatedShare }
             else { value.shares.append(updatedShare) }
+        }) else {
+            if replacesPassword {
+                if let previousPassword { try? PasswordStore.save(previousPassword, for: share.id) }
+                else { PasswordStore.delete(for: share.id) }
+            }
+            return storageIssue
+        }
+        if updatedShare.guestAccess || updatedShare.useSystemCredentials == true {
+            PasswordStore.delete(for: share.id)
         }
         authFailures.remove(share.id)
         nextRetry.removeValue(forKey: share.id)
@@ -226,7 +237,7 @@ final class AppModel: ObservableObject {
     }
 
     func removeShare(_ id: UUID) {
-        mutate { $0.shares.removeAll { $0.id == id } }
+        guard mutate({ $0.shares.removeAll { $0.id == id } }) else { return }
         PasswordStore.delete(for: id)
         shareStatuses.removeValue(forKey: id)
         authFailures.remove(id)
@@ -274,20 +285,21 @@ final class AppModel: ObservableObject {
     func cleanNow() { runCleanup(reason: t("reasonManualCleanup")) }
 
     func unmountOne(_ volume: MountedVolume) {
+        guard storageIssue == nil else { return }
         Task {
-            pauseMatchingShare(for: volume)
+            guard pauseMatchingShare(for: volume) else { return }
             await unmountVerified(volume, reason: t("reasonManualUnmount"))
             refresh()
         }
     }
 
     func unmountSelected(_ selectedIDs: Set<String>) {
-        guard !isCleaning else { return }
+        guard !isCleaning, storageIssue == nil else { return }
         isCleaning = true
         Task {
             let fresh = await Task.detached(priority: .utility) { VolumeScanner.scan() }.value
             for volume in fresh where selectedIDs.contains(volume.id) {
-                pauseMatchingShare(for: volume)
+                guard pauseMatchingShare(for: volume) else { break }
                 await unmountVerified(volume, reason: t("reasonSelectedUnmount"))
             }
             isCleaning = false
@@ -339,6 +351,7 @@ final class AppModel: ObservableObject {
 
     private func handleWake() {
         sleeping = false
+        runningSince = Date()
         nextRetry.removeAll()
         retryCount.removeAll()
         let now = Date()
@@ -439,42 +452,50 @@ final class AppModel: ObservableObject {
         }
     }
 
-    private func pauseShare(_ id: UUID) {
-        mutate { value in
+    @discardableResult
+    private func pauseShare(_ id: UUID) -> Bool {
+        guard mutate({ value in
             guard let index = value.shares.firstIndex(where: { $0.id == id }) else { return }
             value.shares[index].paused = true
-        }
+        }) else { return false }
         shareStatuses[id] = .paused
         updateStarSnapshot()
+        return true
     }
 
-    private func pauseMatchingShare(for volume: MountedVolume) {
-        guard let key = SMBAddress.key(forMountSource: volume.source) else { return }
-        for share in settings.shares where SMBAddress(share.address)?.key == key { pauseShare(share.id) }
+    private func pauseMatchingShare(for volume: MountedVolume) -> Bool {
+        guard let key = SMBAddress.key(forMountSource: volume.source) else { return true }
+        for share in settings.shares where SMBAddress(share.address)?.key == key {
+            guard pauseShare(share.id) else { return false }
+        }
+        return true
     }
 
     private func checkDailyCleanup() {
         guard !sleeping, settings.cleanup.dailyEnabled,
               DailyCleanup.shouldRun(at: Date(), hour: settings.cleanup.hour, minute: settings.cleanup.minute,
-                                     lastRunDay: settings.lastCleanupDay) else { return }
-        mutate { $0.lastCleanupDay = DailyCleanup.dayKey(for: Date()) }
+                                     lastRunDay: settings.lastCleanupDay, runningSince: runningSince) else { return }
+        guard mutate({ $0.lastCleanupDay = DailyCleanup.dayKey(for: Date()) }) else { return }
         runCleanup(reason: t("reasonDailyCleanup"))
     }
 
     private func runCleanup(reason: String) {
-        guard !isCleaning else { return }
+        guard !isCleaning, storageIssue == nil else { return }
         isCleaning = true
         Task {
             let fresh = await Task.detached(priority: .utility) { VolumeScanner.scan() }.value
             let candidates = CleanupPolicy.candidates(from: fresh, settings: settings)
             if candidates.isEmpty { addEvent(t("eventNoMatchingMount", ["reason": reason])) }
-            for volume in candidates { await unmountVerified(volume, reason: reason) }
+            for volume in candidates where storageIssue == nil {
+                await unmountVerified(volume, reason: reason)
+            }
             isCleaning = false
             refresh()
         }
     }
 
     private func unmountVerified(_ volume: MountedVolume, reason: String) async {
+        guard storageIssue == nil else { return }
         let fresh = await Task.detached(priority: .utility) { VolumeScanner.scan() }.value
         guard fresh.contains(where: { $0.path == volume.path && $0.source == volume.source }) else {
             addEvent(t("eventMountChanged", ["name": volume.name]))
@@ -500,14 +521,19 @@ final class AppModel: ObservableObject {
         }
     }
 
-    private func mutate(_ body: (inout AppSettings) -> Void) {
+    @discardableResult
+    private func mutate(_ body: (inout AppSettings) -> Void) -> Bool {
+        guard storageIssue == nil else { return false }
         var updated = settings
         body(&updated)
+        do { try SettingsStore.save(updated) }
+        catch {
+            storageIssue = t("settingsSaveFailed", ["error": error.localizedDescription])
+            return false
+        }
         settings = updated
         updateStarSnapshot()
-        guard storageIssue == nil else { return }
-        do { try SettingsStore.save(settings) }
-        catch { storageIssue = t("settingsSaveFailed", ["error": error.localizedDescription]) }
+        return true
     }
 
     private func updateStarSnapshot() {

@@ -69,7 +69,8 @@ public enum DailyCleanup {
         return String(format: "%04d-%02d-%02d", parts.year ?? 0, parts.month ?? 0, parts.day ?? 0)
     }
 
-    public static func shouldRun(at date: Date, hour: Int, minute: Int, lastRunDay: String?, calendar: Calendar = .current) -> Bool {
+    public static func shouldRun(at date: Date, hour: Int, minute: Int, lastRunDay: String?,
+                                 runningSince: Date = .distantPast, calendar: Calendar = .current) -> Bool {
         guard (0...23).contains(hour), (0...59).contains(minute),
               lastRunDay != dayKey(for: date, calendar: calendar) else { return false }
         var parts = calendar.dateComponents([.year, .month, .day], from: date)
@@ -78,7 +79,7 @@ public enum DailyCleanup {
         parts.second = 0
         guard let scheduled = calendar.date(from: parts) else { return false }
         let elapsed = date.timeIntervalSince(scheduled)
-        return elapsed >= 0 && elapsed < 5 * 60
+        return runningSince <= scheduled && elapsed >= 0 && elapsed < 5 * 60
     }
 }
 

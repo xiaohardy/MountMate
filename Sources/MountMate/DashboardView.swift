@@ -28,6 +28,7 @@ struct DashboardView: View {
                 }
                 .pickerStyle(.menu)
                 .frame(width: 190)
+                .disabled(model.storageIssue != nil)
                 if model.isScanning {
                     ProgressView().controlSize(.small)
                         .help(model.t("scanningMounts"))
@@ -52,8 +53,10 @@ struct DashboardView: View {
                 sectionTitle(model.t("pinnedMounts"), count: model.settings.shares.count)
                 Spacer()
                 Button(model.t("addFromCurrentMounts")) { onImportMount() }
+                    .disabled(model.storageIssue != nil)
                 Button(model.t("addShare")) { onAddShare() }
                     .buttonStyle(.borderedProminent)
+                    .disabled(model.storageIssue != nil)
             }
             if model.settings.shares.isEmpty {
                 emptyMessage(model.t("noSharesDashboard"))
@@ -72,11 +75,13 @@ struct DashboardView: View {
                         if model.mountedVolume(for: share) != nil {
                             Button(model.t("disconnectAndPause")) { model.disconnect(share.id) }
                                 .controlSize(.small)
+                                .disabled(model.storageIssue != nil)
                         } else {
                             Button(model.t(share.paused ? "resumeConnection" : "connect")) {
                                 model.connectNow(share.id)
                             }
                             .controlSize(.small)
+                            .disabled(model.storageIssue != nil)
                         }
                     }
                     .padding(.vertical, 2)
@@ -101,12 +106,12 @@ struct DashboardView: View {
                     model.cleanNow()
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(model.isCleaning || model.cleanupCandidates.isEmpty)
+                .disabled(model.isCleaning || model.cleanupCandidates.isEmpty || model.storageIssue != nil)
                 Button(model.t("unmountSelected")) {
                     model.unmountSelected(selectedIDs)
                     selectedIDs.removeAll()
                 }
-                .disabled(model.isCleaning || selectedIDs.isEmpty)
+                .disabled(model.isCleaning || selectedIDs.isEmpty || model.storageIssue != nil)
                 Spacer()
             }
             Text(model.t("cleanupExplanation"))
@@ -166,6 +171,7 @@ struct DashboardView: View {
             .buttonStyle(.bordered)
             .controlSize(.small)
             .disabled(managed)
+            .disabled(model.storageIssue != nil)
             .help(model.t(managed ? "alwaysProtectKeptShare" :
                           (model.isProtected(volume) ? "removeProtection" : "addToProtectionList")))
             Button { model.unmountOne(volume) } label: {
@@ -173,6 +179,7 @@ struct DashboardView: View {
             }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
+                .disabled(model.storageIssue != nil)
                 .help(model.t("unmountMountHelp"))
         }
         .padding(.vertical, 2)

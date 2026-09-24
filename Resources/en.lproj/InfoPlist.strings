@@ -1,0 +1,2 @@
+"NSLocalNetworkUsageDescription" = "Connect to NAS shares you add and keep them mounted.";
+"NSNetworkVolumesUsageDescription" = "Check whether your network shares are available and manage mounts as you choose.";

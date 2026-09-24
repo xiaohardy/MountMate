@@ -1,4 +1,5 @@
 import Foundation
+import Darwin
 import Security
 import MountMateCore
 
@@ -8,16 +9,24 @@ enum SettingsStore {
         return base.appendingPathComponent("MountMate", isDirectory: true).appendingPathComponent("settings.json")
     }
 
-    static func load() throws -> AppSettings {
-        guard FileManager.default.fileExists(atPath: fileURL.path) else { return AppSettings() }
-        return try JSONDecoder().decode(AppSettings.self, from: Data(contentsOf: fileURL))
+    static func load(from url: URL = fileURL) throws -> AppSettings {
+        guard FileManager.default.fileExists(atPath: url.path) else { return AppSettings() }
+        return try JSONDecoder().decode(AppSettings.self, from: Data(contentsOf: url))
     }
 
-    static func save(_ value: AppSettings) throws {
-        try FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+    static func save(_ value: AppSettings, to url: URL = fileURL) throws {
+        let directory = url.deletingLastPathComponent()
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: directory.path)
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        try encoder.encode(value).write(to: fileURL, options: .atomic)
+        let temporary = directory.appendingPathComponent(".settings-\(UUID().uuidString).tmp")
+        defer { try? FileManager.default.removeItem(at: temporary) }
+        try encoder.encode(value).write(to: temporary, options: .atomic)
+        try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: temporary.path)
+        guard Darwin.rename(temporary.path, url.path) == 0 else {
+            throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO)
+        }
     }
 }
 
@@ -64,7 +73,6 @@ enum PasswordStore {
     }
 }
 
-struct KeychainError: LocalizedError {
+struct KeychainError: Error {
     let status: OSStatus
-    var errorDescription: String? { "钥匙串操作失败（\(status)）" }
 }

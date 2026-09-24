@@ -1,0 +1,2 @@
+"NSLocalNetworkUsageDescription" = "Conectarse a los recursos NAS que añadas y mantenerlos montados.";
+"NSNetworkVolumesUsageDescription" = "Comprobar si tus recursos de red están disponibles y gestionar los volúmenes según tus preferencias.";

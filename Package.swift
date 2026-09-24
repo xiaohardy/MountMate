@@ -11,6 +11,7 @@ let package = Package(
     targets: [
         .target(name: "MountMateCore", resources: [.process("Resources")]),
         .executableTarget(name: "MountMate", dependencies: ["MountMateCore"]),
-        .testTarget(name: "MountMateCoreTests", dependencies: ["MountMateCore"])
+        .testTarget(name: "MountMateCoreTests", dependencies: ["MountMateCore"]),
+        .testTarget(name: "MountMateStorageTests", dependencies: ["MountMate", "MountMateCore"])
     ]
 )

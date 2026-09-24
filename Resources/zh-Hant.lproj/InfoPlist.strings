@@ -1,0 +1,2 @@
+"NSLocalNetworkUsageDescription" = "連接並保持您加入的 NAS 共享掛載。";
+"NSNetworkVolumesUsageDescription" = "檢查網路共享是否可用，並依照您的選擇管理掛載。";

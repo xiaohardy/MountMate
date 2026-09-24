@@ -38,6 +38,10 @@ final class PolicyTests: XCTestCase {
         XCTAssertTrue(DailyCleanup.shouldRun(at: day.addingTimeInterval(90), hour: 3, minute: 0, lastRunDay: nil, calendar: calendar))
         XCTAssertFalse(DailyCleanup.shouldRun(at: day.addingTimeInterval(90), hour: 3, minute: 0, lastRunDay: key, calendar: calendar))
         XCTAssertFalse(DailyCleanup.shouldRun(at: day.addingTimeInterval(6 * 3600), hour: 3, minute: 0, lastRunDay: nil, calendar: calendar))
+        XCTAssertFalse(DailyCleanup.shouldRun(at: day.addingTimeInterval(90), hour: 3, minute: 0,
+                                              lastRunDay: nil, runningSince: day.addingTimeInterval(30), calendar: calendar))
+        XCTAssertTrue(DailyCleanup.shouldRun(at: day.addingTimeInterval(90), hour: 3, minute: 0,
+                                             lastRunDay: nil, runningSince: day.addingTimeInterval(-30), calendar: calendar))
     }
 
     func testUSBHardDriveIsNotClassifiedAsFlashDrive() {

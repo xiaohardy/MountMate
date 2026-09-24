@@ -16,7 +16,7 @@ trap cleanup EXIT
 
 mkdir -p "$work/stage" "$mountpoint" dist
 scripts/build-app.sh "$work/stage/MountMate.app"
-if LC_ALL=C strings "$work/stage/MountMate.app/Contents/MacOS/MountMate" | grep -Eq '/Users/[^/]+/|/home/[^/]+/'; then
+if LC_ALL=C grep -a -Eq '/Users/|/home/' "$work/stage/MountMate.app/Contents/MacOS/MountMate"; then
     echo "Installer executable contains a personal build path." >&2
     exit 1
 fi
@@ -35,6 +35,7 @@ test -s "$installed/Contents/Resources/AppIcon.icns"
 resource_bundle="$installed/Contents/Resources/MountMate_MountMateCore.bundle"
 for language in en de es fr ja pt-BR zh-Hans zh-Hant; do
     test -s "$resource_bundle/$language.json" || test -s "$resource_bundle/Contents/Resources/$language.json"
+    test -s "$installed/Contents/Resources/$language.lproj/InfoPlist.strings"
 done
 test "$(readlink "$mountpoint/Applications")" = /Applications
 echo "Verified installer: $dmg"

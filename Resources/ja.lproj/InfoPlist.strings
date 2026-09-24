@@ -1,0 +1,2 @@
+"NSLocalNetworkUsageDescription" = "追加した NAS 共有に接続し、マウントを維持します。";
+"NSNetworkVolumesUsageDescription" = "ネットワーク共有が利用可能か確認し、選択に従ってマウントを管理します。";

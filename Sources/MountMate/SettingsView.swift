@@ -65,6 +65,7 @@ private struct SharesSettingsView: View {
                 Button(model.t("addShare")) {
                     editingShare = ManagedShare(name: "", address: "smb://")
                 }
+                .disabled(model.storageIssue != nil)
             }
             Divider()
             if model.settings.shares.isEmpty {
@@ -84,7 +85,9 @@ private struct SharesSettingsView: View {
                                 }
                                 Spacer()
                                 Button(model.t("edit")) { editingShare = share }
+                                    .disabled(model.storageIssue != nil)
                                 Button(model.t("remove"), role: .destructive) { removalID = share.id }
+                                    .disabled(model.storageIssue != nil)
                             }
                             .padding(10)
                             .background(.quaternary.opacity(0.45), in: RoundedRectangle(cornerRadius: 8))
@@ -161,6 +164,7 @@ private struct ShareEditorView: View {
                     if error == nil { dismiss() }
                 }
                 .buttonStyle(.borderedProminent)
+                .disabled(model.storageIssue != nil)
             }
         }
         .padding(20)
@@ -233,6 +237,7 @@ private struct CleanupSettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .disabled(model.storageIssue != nil)
     }
 }
 

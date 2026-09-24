@@ -1,0 +1,2 @@
+"NSLocalNetworkUsageDescription" = "Conectar-se aos compartilhamentos NAS adicionados e mantê-los montados.";
+"NSNetworkVolumesUsageDescription" = "Verificar a disponibilidade dos compartilhamentos de rede e gerenciar as montagens conforme suas escolhas.";

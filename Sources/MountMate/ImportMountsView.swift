@@ -46,7 +46,7 @@ struct ImportMountsView: View {
                     if model.importCurrentSMBShares(selectedIDs) > 0 { dismiss() }
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(selectedIDs.isEmpty || model.isScanning)
+                .disabled(selectedIDs.isEmpty || model.isScanning || model.storageIssue != nil)
             }
         }
         .padding(20)

@@ -34,6 +34,7 @@ private struct StatusMenuView: View {
             model.requestAddShare()
             showMainWindow()
         }
+        .disabled(model.storageIssue != nil)
         Divider()
         ForEach(model.settings.shares) { share in
             Button("\(share.name) · \(model.statusTitle(for: share))") {
@@ -45,7 +46,7 @@ private struct StatusMenuView: View {
         Button(model.t("cleanupTemporaryCount", ["count": String(model.cleanupCandidates.count)])) {
             model.cleanNow()
         }
-            .disabled(model.isCleaning || model.cleanupCandidates.isEmpty)
+            .disabled(model.isCleaning || model.cleanupCandidates.isEmpty || model.storageIssue != nil)
         Divider()
         Button(model.t("quitMountMate")) { NSApplication.shared.terminate(nil) }
     }
