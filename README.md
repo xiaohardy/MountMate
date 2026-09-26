@@ -1,6 +1,6 @@
 # MountMate
 
-**Download:** [MountMate 0.3.3 for Apple Silicon (.dmg)](https://github.com/xiaohardy/MountMate/releases/download/v0.3.3/MountMate-0.3.3-build6-preview-arm64.dmg) · [Release notes](https://github.com/xiaohardy/MountMate/releases/tag/v0.3.3)
+**Download:** [MountMate 0.3.4 for Apple Silicon (.dmg)](https://github.com/xiaohardy/MountMate/releases/download/v0.3.4/MountMate-0.3.4-build7-preview-arm64.dmg) · [Release notes](https://github.com/xiaohardy/MountMate/releases/tag/v0.3.4)
 
 The installer is under **Releases → Assets** on GitHub. The **Packages** tab does not list DMG files.
 
@@ -10,15 +10,15 @@ MountMate is a macOS menu bar app that keeps selected SMB shares connected and s
 
 ## Install or update
 
-1. Download the [Apple Silicon DMG](https://github.com/xiaohardy/MountMate/releases/download/v0.3.3/MountMate-0.3.3-build6-preview-arm64.dmg).
+1. Download the [Apple Silicon DMG](https://github.com/xiaohardy/MountMate/releases/download/v0.3.4/MountMate-0.3.4-build7-preview-arm64.dmg).
 2. Open it and drag **MountMate.app** to **Applications**.
-3. Start MountMate from Applications. Closing its window leaves the menu bar app running; choose **Quit MountMate** from the menu bar to exit.
+3. Start MountMate from Applications. It runs in the menu bar without a Dock icon. Select **Open MountMate** from its menu bar icon to show the main window, or **Quit MountMate** to exit.
 
-If you use v0.3.2, turn off **Launch MountMate at login** in its **Pinned mounts** tab, then quit it from the menu bar before replacing the app. The v0.3.3 app has a new public bundle identifier. Your settings file remains in the same location, but macOS may ask again for network permissions and a saved SMB password. Check your pinned mounts, re-enter any password requested in the share editor, and then re-enable launch at login. If an old login item remains in **System Settings → General → Login Items**, remove that old item.
+Before replacing an installed version, choose **Quit MountMate** from its menu bar icon. If you use v0.3.2, first turn off **Launch MountMate at login** in its **Pinned mounts** tab. The v0.3.3 and later apps use a public bundle identifier. Your settings file remains in the same location, but upgrading from v0.3.2 may cause macOS to ask again for network permissions and a saved SMB password. Check your pinned mounts, re-enter any password requested in the share editor, and then re-enable launch at login. If an old login item remains in **System Settings → General → Login Items**, remove that old item.
 
 ### First launch on macOS
 
-This preview has an ad hoc signature and **has not been notarized by Apple**. A downloaded copy may be blocked on first launch. Continue only if you obtained it from [this project's release](https://github.com/xiaohardy/MountMate/releases/tag/v0.3.3) and trust it.
+This preview has an ad hoc signature and **has not been notarized by Apple**. A downloaded copy may be blocked on first launch. Continue only if you obtained it from [this project's release](https://github.com/xiaohardy/MountMate/releases/tag/v0.3.4) and trust it.
 
 1. Try opening the app once. If macOS blocks it, choose **Done** if available.
 2. Open **System Settings → Privacy & Security**, scroll to **Security**, and choose **Open Anyway**.

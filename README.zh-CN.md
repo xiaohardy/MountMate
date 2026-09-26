@@ -1,6 +1,6 @@
 # MountMate / 挂载管家
 
-**直接下载：[MountMate 0.3.3 Apple Silicon 安装包（DMG）](https://github.com/xiaohardy/MountMate/releases/download/v0.3.3/MountMate-0.3.3-build6-preview-arm64.dmg)** · [版本说明](https://github.com/xiaohardy/MountMate/releases/tag/v0.3.3)
+**直接下载：[MountMate 0.3.4 Apple Silicon 安装包（DMG）](https://github.com/xiaohardy/MountMate/releases/download/v0.3.4/MountMate-0.3.4-build7-preview-arm64.dmg)** · [版本说明](https://github.com/xiaohardy/MountMate/releases/tag/v0.3.4)
 
 安装包位于 GitHub 的 **Releases → Assets（资源）** 中；**Packages** 栏不会显示 DMG。
 
@@ -10,15 +10,15 @@ MountMate 是 macOS 菜单栏挂载工具：保持指定 SMB 共享连接，按�
 
 ## 安装或更新
 
-1. 下载 [Apple Silicon DMG 安装包](https://github.com/xiaohardy/MountMate/releases/download/v0.3.3/MountMate-0.3.3-build6-preview-arm64.dmg)。
+1. 下载 [Apple Silicon DMG 安装包](https://github.com/xiaohardy/MountMate/releases/download/v0.3.4/MountMate-0.3.4-build7-preview-arm64.dmg)。
 2. 打开镜像，将 **MountMate.app** 拖到 **Applications** 快捷方式。
-3. 从“应用程序”启动 MountMate。关闭主窗口后，菜单栏入口仍会运行；要退出，请在菜单栏选择“退出 MountMate”。
+3. 从“应用程序”启动 MountMate。它只在菜单栏显示，不在程序坞显示。点击菜单栏图标并选择“打开 MountMate”即可显示主窗口；选择“退出 MountMate”即可退出。
 
-若正在使用 v0.3.2，请先到旧版“固定挂载”关闭“登录时启动 MountMate”，再从菜单栏退出旧进程，之后替换应用。v0.3.3 改用了公开的应用标识符；配置文件路径不变，但 macOS 可能重新询问网络权限或 SMB 密码。打开新版后检查固定挂载，如提示缺少密码，在共享编辑页重新填写，最后重新开启登录启动。如果“系统设置 → 通用 → 登录项”中仍有旧版条目，请移除旧条目。
+替换已有版本前，先从菜单栏选择“退出 MountMate”。若正在使用 v0.3.2，还要先到旧版“固定挂载”关闭“登录时启动 MountMate”。v0.3.3 及之后版本改用了公开的应用标识符；配置文件路径不变，但从 v0.3.2 升级时 macOS 可能重新询问网络权限或 SMB 密码。打开新版后检查固定挂载，如提示缺少密码，在共享编辑页重新填写，最后重新开启登录启动。如果“系统设置 → 通用 → 登录项”中仍有旧版条目，请移除旧条目。
 
 ### 首次打开时的 macOS 安全提示
 
-这个预览版使用临时签名，**尚未经过 Apple 公证**。从 GitHub 下载后，macOS 可能阻止首次打开。只有确认安装包来自[本项目发布页](https://github.com/xiaohardy/MountMate/releases/tag/v0.3.3)并且你信任它时，才继续：
+这个预览版使用临时签名，**尚未经过 Apple 公证**。从 GitHub 下载后，macOS 可能阻止首次打开。只有确认安装包来自[本项目发布页](https://github.com/xiaohardy/MountMate/releases/tag/v0.3.4)并且你信任它时，才继续：
 
 1. 尝试打开应用一次。如果出现拦截提示，选择“完成”（如有）。
 2. 打开“系统设置 → 隐私与安全性”，在“安全性”中点击“仍要打开”。

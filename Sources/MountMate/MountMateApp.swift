@@ -7,12 +7,6 @@ struct MountMateApp: App {
     @StateObject private var model = AppModel()
 
     var body: some Scene {
-        Window("MountMate", id: "main") {
-            SettingsView()
-                .environmentObject(model)
-        }
-        .defaultSize(width: 760, height: 600)
-
         MenuBarExtra {
             StatusMenuView()
                 .environmentObject(model)
@@ -21,6 +15,12 @@ struct MountMateApp: App {
                 .renderingMode(.original)
                 .accessibilityLabel("MountMate")
         }
+
+        Window("MountMate", id: "main") {
+            SettingsView()
+                .environmentObject(model)
+        }
+        .defaultSize(width: 760, height: 600)
     }
 }
 

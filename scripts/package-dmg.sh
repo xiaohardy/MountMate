@@ -31,6 +31,7 @@ codesign --verify --strict "$installed"
 file "$installed/Contents/MacOS/MountMate" | grep -q 'arm64'
 test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$installed/Contents/Info.plist")" = "$version"
 test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$installed/Contents/Info.plist")" = "$build"
+test "$(/usr/libexec/PlistBuddy -c 'Print :LSUIElement' "$installed/Contents/Info.plist")" = true
 test -s "$installed/Contents/Resources/AppIcon.icns"
 resource_bundle="$installed/Contents/Resources/MountMate_MountMateCore.bundle"
 for language in en de es fr ja pt-BR zh-Hans zh-Hant; do

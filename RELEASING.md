@@ -12,9 +12,9 @@ This checklist adapts the project's macOS preview release SOP. Record the eviden
 ## Build and inspect the installer
 
 - Build in a clean temporary directory. Run scripts/package-dmg.sh and keep the resulting DMG and SHA-256.
-- Verify the signed app after staging and again after read-only mounting of the DMG. Check strict code signature, arm64 executable, version/build, icon, eight interface languages, eight localized permission texts, image checksum, and a two-item DMG root containing only MountMate.app and the Applications shortcut.
+- Verify the signed app after staging and again after read-only mounting of the DMG. Check strict code signature, arm64 executable, version/build, `LSUIElement=true`, icon, eight interface languages, eight localized permission texts, image checksum, and a two-item DMG root containing only MountMate.app and the Applications shortcut.
 - Scan the final executable and bundled resources for personal build paths and private data. A source-only scan is insufficient.
-- On a Mac used for testing, quit the old app before replacing it. Open the downloaded app and exercise the menu bar, adding or importing an SMB share, protection, normal unmount behavior, and a safe noncritical reconnection path. Record separately anything that was not tested, including other macOS versions, clean-Mac first launch, sleep, or real NAS recovery.
+- On a Mac used for testing, quit the old app before replacing it. Open the downloaded app and check that only the menu bar icon appears at launch, the Dock icon stays hidden, and **Open MountMate** still opens its window. Exercise adding or importing an SMB share, protection, normal unmount behavior, and a safe noncritical reconnection path. Record separately anything that was not tested, including other macOS versions, clean-Mac first launch, sleep, or real NAS recovery.
 - An ad hoc signature is not Apple notarization. Keep preview releases marked as previews, describe the macOS first-launch steps using Apple's guidance, and never recommend disabling system-wide security checks.
 
 ## Publish and verify
